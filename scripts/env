@@ -1,0 +1,16 @@
+# Get the image name from gitlab CI env if present
+IMAGE_BUILDER_DOCKERFILE="$(dirname "$0")/Dockerfile.imagebuilder"
+IMAGE_BUILDER_IMAGE_NAME="${CI_REGISTRY_IMAGE:-moveloader}-imagebuilder:latest"
+
+# Same for bootloader build image
+BOOTLOADER_BUILDER_DOCKERFILE="$(dirname "$0")/Dockerfile.bootloader"
+BOOTLOADER_BUILDER_IMAGE_NAME="${CI_REGISTRY_IMAGE:-moveloader}-bootloader:latest"
+
+if command -v podman &> /dev/null; then
+    CONTAINER_RUNTIME="podman"
+elif command -v docker &> /dev/null; then
+    CONTAINER_RUNTIME="docker"
+else
+    echo "Error: Neither Podman nor Docker is installed. Please install either Podman or Docker."
+    exit 1
+fi

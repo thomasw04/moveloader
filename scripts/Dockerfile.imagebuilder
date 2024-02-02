@@ -1,0 +1,25 @@
+# This Dockerfile is used for the final build
+FROM ubuntu:22.04
+
+# The packages we need, as documented in the README
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
+	curl wget git make gcc-arm-none-eabi build-essential
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+	echo 'source $HOME/.cargo/env' >> $HOME/.bashrc && \
+	echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $HOME/.bashrc
+ENV PATH="${HOME}/.cargo/bin:${PATH}"
+
+COPY image-builder /tmp/image-builder
+COPY interface /tmp/interface
+
+RUN cd /tmp/image-builder && \
+	$HOME/.cargo/bin/cargo test && \
+	rm -rf /tmp/image-builder/target
+
+RUN $HOME/.cargo/bin/cargo install --path /tmp/image-builder && \
+	rm -rf /tmp/image-builder/target
+
+WORKDIR /mount
+ENTRYPOINT ["/root/.cargo/bin/image-builder"]

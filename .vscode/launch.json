@@ -1,0 +1,93 @@
+{
+    /*
+     * Requires the Rust Language Server (rust-analyzer) and Cortex-Debug extensions
+     * https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer
+     * https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug
+     * This configuration is exclusively for the STM32L4R5 I annotated the things you have to change for other L4's.
+     */
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Debug (QEMU)",
+            "servertype": "qemu",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "Cargo Build (debug)",
+            "runToEntryPoint": "main",
+            "executable": "./bootloader/target/thumbv7em-none-eabi/debug/stm-bootloader",
+            "cpu": "cortex-m4",
+            "machine": "lm3s6965evb",
+        },
+        {
+            /* Configuration for the STM32L4R5 */
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Debug (OpenOCD)",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "Build and Flash onto Chip (debug)",
+            "postLaunchCommands": ["source .vscode/openocd.gdb"],
+            "runToEntryPoint": "main",
+            "executable": "./bootloader/target/thumbv7em-none-eabi/debug/stm-bootloader",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32l4x.cfg"
+            ]
+        },
+        {
+            /* Configuration for the STM32L4R5 */
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Release (OpenOCD)",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "Build and Flash onto Chip (release)",
+            "postLaunchCommands": [
+                "source .vscode/openocd.gdb"
+            ],
+            // Yes, this wrong executable is intentional
+            "executable": "./bootloader/target/thumbv7em-none-eabi/debug/stm-bootloader",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32l4x.cfg"
+            ]
+        },
+        {
+            /* Configuration for the STM32L4R5 */
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Release broken md1 (OpenOCD)",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "Build and Flash onto Chip (release, broken md1)",
+            "postLaunchCommands": [
+                "source .vscode/openocd.gdb"
+            ],
+            // Yes, this wrong executable is intentional
+            "executable": "./bootloader/target/thumbv7em-none-eabi/debug/stm-bootloader",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32l4x.cfg"
+            ]
+        },
+        {
+            /* Configuration for the STM32L4R5 */
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Release all metadata broken (OpenOCD)",
+            "servertype": "openocd",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "Build and Flash onto Chip (release, all metadata broken)",
+            "postLaunchCommands": [
+                "source .vscode/openocd.gdb"
+            ],
+            // Yes, this wrong executable is intentional
+            "executable": "./bootloader/target/thumbv7em-none-eabi/debug/stm-bootloader",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32l4x.cfg"
+            ]
+        }
+    ]
+}

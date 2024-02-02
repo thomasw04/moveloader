@@ -1,0 +1,23 @@
+# This Dockerfile is used for the final build
+FROM ubuntu:22.04
+
+# The packages we need, as documented in the README
+RUN apt-get update \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -yq \
+	curl wget git make gcc-arm-none-eabi build-essential \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+	echo 'source $HOME/.cargo/env' >> $HOME/.bashrc && \
+	echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $HOME/.bashrc
+ENV PATH="${HOME}/.cargo/bin:${PATH}"
+
+RUN $HOME/.cargo/bin/rustup target add thumbv7em-none-eabi
+
+WORKDIR /build
+ENTRYPOINT cd bootloader && \
+	$HOME/.cargo/bin/cargo build --release --target thumbv7em-none-eabi && \
+	cp target/thumbv7em-none-eabi/release/stm-bootloader /tmp/bootloader.elf && \
+	arm-none-eabi-objcopy -O binary /tmp/bootloader.elf /output/bootloader.bin && \
+	echo "Wrote bootloader to bootloader.bin"
