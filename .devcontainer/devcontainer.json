@@ -7,8 +7,6 @@
 		"dockerfile": "Dockerfile"
 	},
 	"runArgs": [
-		// Required for USB device access for flashing
-		"--privileged",
 		// If we don't mount /dev, we can only access devices that were available when
 		// the container was started, not those that were plugged in while it was running
 		"-v", "/dev:/dev"
@@ -48,9 +46,6 @@
 	// Policies that allow debugging inside of container
 	"capAdd": [
 		"SYS_PTRACE"
-	],
-	"securityOpt": [
-		"seccomp=unconfined"
 	],
 
 	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
